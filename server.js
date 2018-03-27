@@ -32,7 +32,9 @@ if (process.env.VCAP_SERVICES) {
   app.use(secure());
 }
 
-app.use(express.static(__dirname + '/static'));
+// app.use(express.static(__dirname + '/static'));
+console.log('Server should host ' + __dirname + '/build');
+app.use(express.static(__dirname + '/build'));
 app.use(cors());
 
 // token endpoints
@@ -82,8 +84,8 @@ if (!process.env.VCAP_SERVICES) {
   const HTTPS_PORT = 3001;
 
   const options = {
-    key: fs.readFileSync(__dirname + '/keys/localhost.pem'),
-    cert: fs.readFileSync(__dirname + '/keys/localhost.cert'),
+    key: fs.readFileSync(__dirname + '/src/keys/localhost.pem'),
+    cert: fs.readFileSync(__dirname + '/src/keys/localhost.cert'),
   };
   https.createServer(options, app).listen(HTTPS_PORT, function() {
     console.log('Secure server live at https://localhost:%s/', HTTPS_PORT);

@@ -23,7 +23,7 @@ class App extends Component {
       transcript: '',
       customerSearchActive: false,
       customerDetails: false,
-      openLastOrder: true,
+      openLastOrder: false,
       customers: [
         {
           id: '00001',
@@ -129,6 +129,7 @@ class App extends Component {
     // Match the reason and auto-select in complaint form
     var aMatches = sData.match(this.reasons);
     if (aMatches && aMatches.length > 0) {
+      console.log(aMatches[0]);
       this.setState({ complaintReason: aMatches[0] });
     }
   }
@@ -179,7 +180,7 @@ class App extends Component {
       btnText: 'Stop',
     });
 
-    fetch('https://localhost:3001/api/speech-to-text/token')
+    fetch('/api/speech-to-text/token')
       .then(function(response) {
         return response.text();
       })
