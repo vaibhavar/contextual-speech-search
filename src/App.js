@@ -7,9 +7,9 @@ import AppBar from 'material-ui/AppBar';
 import VoiceIcon from 'material-ui/svg-icons/action/settings-voice';
 
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import Transcript from './Transcript';
 import CustomerSearch from './CustomerSearch';
 import CustomerProfile from './CustomerProfile';
+import OrderDetails from './OrderDetails';
 
 var recognizeMic = require('watson-speech/speech-to-text/recognize-microphone');
 
@@ -20,9 +20,10 @@ class App extends Component {
       text: '',
       btnText: 'Start',
       listening: false,
-      transcript: [],
+      transcript: '',
       customerSearchActive: false,
       customerDetails: false,
+      openLastOrder: true,
       customers: [
         {
           id: '00001',
@@ -58,7 +59,10 @@ class App extends Component {
     };
 
     this.onListenPress = this.onListenPress.bind(this);
-    this.keywords = new RegExp(/customer|profile|past orders|thank you/);
+    this.closeOrderDetails = this.closeOrderDetails.bind(this);
+
+    this.keywords = new RegExp(/customer|profile|have a nice day|last order|reason/);
+    this.reasons = new RegExp(/broken|wrong|late|other/);
     this.numbers = new RegExp(/one|two|three|four|five|six|seven|eight|nine|ten/g);
     this.numbersToNum = {
       one: 1,
@@ -88,6 +92,19 @@ class App extends Component {
     }
   }
 
+  endCall() {
+    // Reset state
+    this.setState({
+      listening: false,
+      customer: '',
+      customerSearchActive: false,
+      openLastOrder: false,
+      customerDetails: false,
+    });
+    // Stop stream
+    this.stream.stop();
+  }
+
   searchCustomer(sData) {
     const extractedCustomerId = this.convertToNumber(sData);
     // Customer id is expected to be 5 digits
@@ -108,6 +125,14 @@ class App extends Component {
     }
   }
 
+  listenForReason(sData) {
+    // Match the reason and auto-select in complaint form
+    var aMatches = sData.match(this.reasons);
+    if (aMatches && aMatches.length > 0) {
+      this.setState({ complaintReason: aMatches[0] });
+    }
+  }
+
   doSearch(sData) {
     const aMatches = sData.match(this.keywords);
     if (aMatches && aMatches.length > 0) {
@@ -119,15 +144,23 @@ class App extends Component {
             this.searchCustomer(sData);
           }
           break;
-        case 'past orders':
-          this.setState({ show: 'Loading past orders', openStatusBar: true });
-          break;
-        case 'thank you':
+        case 'have a nice day':
+          // Close the session
+          this.endCall();
           break;
         case 'profile':
           // If we already have a customer selected
           if (this.state.customer) {
-            this.setState({ customerDetails: true });
+            this.setState({ customerSearchActive: false, customerDetails: true });
+          }
+          break;
+        case 'last order':
+          // Open details of last order
+          this.setState({ customerDetails: false, openLastOrder: true });
+          break;
+        case 'reason':
+          if (this.state.openLastOrder) {
+            this.listenForReason(sData);
           }
           break;
       }
@@ -162,14 +195,12 @@ class App extends Component {
           this.stream.on(
             'data',
             function(data) {
-              //if (data.final) {
               let sData = data.alternatives[0].transcript;
               this.doSearch(sData);
               //console.log(data);
               this.setState({ text: sData });
-              //var aTranscript = this.state.transcript;
-              //aTranscript.push({ message: sData });
-              //this.setState({ transcript: aTranscript });
+              //if (data.final) {
+              //  this.setState({ transcript: `${this.state.transcript} ${sData}` });
               //}
             }.bind(this)
           );
@@ -187,6 +218,10 @@ class App extends Component {
     return this.state.customers.filter(oCustomer => oCustomer.id === sId)[0];
   }
 
+  closeOrderDetails() {
+    this.setState({ openLastOrder: false });
+  }
+
   render() {
     return (
       <MuiThemeProvider>
@@ -197,6 +232,10 @@ class App extends Component {
         <div className="App">
           <header className="App-header">
             {this.state.listening ? <div class="circle-ripple" /> : <span />}
+            <div class="words">
+              {' '}
+              <span> {this.state.text} </span>
+            </div>
           </header>
           <FloatingActionButton
             className="fab"
@@ -205,7 +244,6 @@ class App extends Component {
           >
             <VoiceIcon />
           </FloatingActionButton>
-          <div>{this.state.text}</div>
 
           {/* <Transcript messages={this.state.transcript} />*/}
 
@@ -219,6 +257,12 @@ class App extends Component {
             open={this.state.customerDetails}
             customer={this.getCustomer(this.state.customer)}
             customerId={this.state.customer}
+          />
+
+          <OrderDetails
+            open={this.state.openLastOrder}
+            onClose={this.closeOrderDetails}
+            reason={this.state.complaintReason}
           />
 
           <Snackbar

@@ -29,6 +29,8 @@ header {
   height: 1em;
   border-radius: 50%;
   animation: ripple 2s linear infinite;
+  position: absolute;
+  right: 80px;
   /*animation-duration: var(--animationduration);*/
 }
 
@@ -71,4 +73,10 @@ header {
   bottom: 20px;
   right: 20px;
   will-change: transform;
+}
+
+.words {
+  font-family: 'Comfortaa', cursive;
+  color: white;
+  font-size: 40px;
 }
