@@ -1,0 +1,74 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+header {
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle-ripple {
+  background-color: #c3d9ff;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  animation: ripple 2s linear infinite;
+  /*animation-duration: var(--animationduration);*/
+}
+
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 #3399ff, 0 0 0 1em #7d3bff, 0 0 0 4em #ff0707, 0 0 0 5em #ff5722;
+  }
+  100% {
+    box-shadow: 0 0 0 2em #3399ff, 0 0 0 4em #e91e63, 0 0 0 2em #e91e63, 0 0 0 5em #ff22da;
+  }
+}
+
+.statusBar {
+  background: black;
+  color: white;
+  font-size: 20px;
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  will-change: transform;
+  transition: 1s ease-in;
+}
+
+.statusBar:empty {
+  height: 0px;
+}
+
+.statusBar.waiting {
+  background: #efefef;
+  color: black;
+}
+
+.statusBar.success {
+  background: #00bcd4;
+  color: black;
+}
+
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  will-change: transform;
+}
