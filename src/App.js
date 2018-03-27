@@ -129,7 +129,6 @@ class App extends Component {
     // Match the reason and auto-select in complaint form
     var aMatches = sData.match(this.reasons);
     if (aMatches && aMatches.length > 0) {
-      console.log(aMatches[0]);
       this.setState({ complaintReason: aMatches[0] });
     }
   }

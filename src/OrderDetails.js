@@ -53,7 +53,7 @@ class OrderDetails extends React.Component {
 				</Stepper>
 				<List>
 					<Subheader>Reason of complaint</Subheader>
-					<RadioButtonGroup name="complaint" defaultSelected={this.props.reason}>
+					<RadioButtonGroup name="complaint" value={this.props.reason}>
 						<RadioButton
 							value="wrong"
 							label="Wrong Item Delivered"
