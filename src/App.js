@@ -52,7 +52,7 @@ class App extends Component {
         },
         {
           id: '54321',
-          name: 'Sanchit',
+          name: 'Kelly',
           orders: [],
         },
       ],
@@ -109,6 +109,7 @@ class App extends Component {
     const extractedCustomerId = this.convertToNumber(sData);
     // Customer id is expected to be 5 digits
     if (extractedCustomerId && extractedCustomerId.length === 5) {
+      document.querySelector('strong#customerid').className = 'highlighted';
       this.setState({
         show: 'Searching for Customer with ID = ' + extractedCustomerId,
         openStatusBar: true,
@@ -126,6 +127,7 @@ class App extends Component {
   }
 
   listenForReason(sData) {
+    console.log('reason');
     // Match the reason and auto-select in complaint form
     var aMatches = sData.match(this.reasons);
     if (aMatches && aMatches.length > 0) {
@@ -134,32 +136,41 @@ class App extends Component {
   }
 
   doSearch(sData) {
+    console.log(sData);
     const aMatches = sData.match(this.keywords);
     if (aMatches && aMatches.length > 0) {
+      if (document.querySelector('strong.highlighted')) {
+        document.querySelector('strong.highlighted').className = '';
+      }
       const sMatch = aMatches[0];
       switch (sMatch) {
         case 'customer':
           // Only search if customer is not already present
           if (!this.state.customer) {
+            document.querySelector('strong#customer').className = 'highlighted';
             this.searchCustomer(sData);
           }
           break;
         case 'have a nice day':
+          document.querySelector('strong#niceday').className = 'highlighted';
           // Close the session
           this.endCall();
           break;
         case 'profile':
+          document.querySelector('strong#profile').className = 'highlighted';
           // If we already have a customer selected
           if (this.state.customer) {
             this.setState({ customerSearchActive: false, customerDetails: true });
           }
           break;
         case 'last order':
+          document.querySelector('strong#lastorder').className = 'highlighted';
           // Open details of last order
           this.setState({ customerDetails: false, openLastOrder: true });
           break;
         case 'reason':
           if (this.state.openLastOrder) {
+            document.querySelector('strong#reason').className = 'highlighted';
             this.listenForReason(sData);
           }
           break;
@@ -226,7 +237,7 @@ class App extends Component {
     return (
       <MuiThemeProvider>
         <AppBar
-          title="BayMax - your personal assistant"
+          title="BayMax - the companion of support assistants"
           iconClassNameRight="muidocs-icon-navigation-expand-more"
         />
         <div className="App">
@@ -264,6 +275,21 @@ class App extends Component {
             onClose={this.closeOrderDetails}
             reason={this.state.complaintReason}
           />
+
+          <span className="logo">
+            <img src="https://rlv.zcache.com/baymax_waving_classic_round_sticker-r5e5fdb049089454bb138d73cbaa0c5ab_v9waf_8byvr_324.jpg" />
+          </span>
+          <br />
+          <p className="instructions">
+            Hi, I'm BayMax. I'll help you navigate through this application.<br />
+            You can use keywords like <br />'<strong id="customer">customer</strong>', '<strong id="customerid">
+              customer ID &lt;5 digit number&gt;
+            </strong>, <strong id="profile">profile</strong>,{' '}
+            <strong id="lastorder">last order</strong>,{' '}
+            <strong id="reason">reason &lt;reason of complaint&gt; </strong>', '<strong id="niceday">
+              have a nice day
+            </strong>'
+          </p>
 
           <Snackbar
             open={this.state.openStatusBar}

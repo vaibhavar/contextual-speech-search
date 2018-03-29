@@ -13,7 +13,10 @@ class CustomerSearch extends React.Component {
 		return (
 			<Dialog open={this.props.open}>
 				<AppBar title="Customers" />
-				<TextField floatingLabelText="Customer ID" value={this.props.customerId} />
+				<TextField
+					floatingLabelText="Enter Customer's Phone Number"
+					value={this.props.customerId}
+				/>
 				<List>
 					{this.props.customers
 						.filter(oCustomer => !sCustomerId || oCustomer.id === sCustomerId)
